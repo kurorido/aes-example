@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        var encryptedData = "0EmVS69YUBCibylCWo3SFW5qtM7YU/rRXHnrIsewMErikpR8y9ZfnNjm/zYh8GCA"
+        const key = new TextEncoder().encode('0123456789abcdef0123456789abcdef')
+        const iv = new TextEncoder().encode('0000000000000000')
+
+        window.crypto.subtle.importKey(
+            "raw",
+            key,
+            { name: "AES-CBC", length: 256 },
+            false,
+            ["decrypt"]
+        ).then(function(cipher) {
+            encryptedData = atob(encryptedData);
+            const encryptedDataArray = new Uint8Array(
+                encryptedData.length
+            );
+            for (let i = 0; i < encryptedData.length; i++) {
+                encryptedDataArray[i] = encryptedData.charCodeAt(i);
+            }
+            window.crypto.subtle.decrypt(
+                { name: "AES-CBC", iv },
+                cipher,
+                encryptedDataArray
+            ).then(function (decryptedDataBuffer) {
+                console.log(new TextDecoder().decode(decryptedDataBuffer))
+            })
+        })
+    </script>
+</body>
+</html>

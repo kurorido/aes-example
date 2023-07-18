@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // Convert the data from a UTF-8 string to a byte array
+        const data = new TextEncoder().encode("這是一個需要加密的字串")
+        // Convert the key and IV from UTF-8 strings to byte arrays
+        const key = new TextEncoder().encode('0123456789abcdef0123456789abcdef');
+        const iv = new TextEncoder().encode('0000000000000000');
+
+        // Create a new AES cipher with key and IV
+        window.crypto.subtle.importKey(
+            "raw",
+            key,
+            { name: "AES-CBC", length: 256 },
+            false,
+            ["encrypt"]
+        ).then(function(cipher) {
+            // Pad the data to a multiple of 16 bytes
+            const padding = 16 - (data.length % 16);
+            const paddedData = new Uint8Array(data.length + padding);
+            paddedData.set(data);
+            paddedData.fill(padding, data.length);
+    
+            // Encrypt the padded data using the AES cipher and CBC mode
+            window.crypto.subtle.encrypt(
+                { name: "AES-CBC", iv },
+                cipher,
+                paddedData
+            ).then(function (encryptedDataBuffer) {
+                const encrypted = btoa(String.fromCharCode(...new Uint8Array(encryptedDataBuffer)))
+                console.log(encrypted)
+            });
+        });
+
+
+    </script>
+</body>
+</html>
